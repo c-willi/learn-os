@@ -4,6 +4,9 @@ bits 64
 
 ; constants
 
+
+section .header progbits start=0x0
+
 ; ==========
 ; DOS HEADER
 ; ==========
@@ -32,5 +35,21 @@ DOS_HEADER:
     .e_res2:     times 10 dw 0              ; more reserved space
     .e_lfanew:   dd PE_HEADER               ; offset to the PE header (important)
 
+; =========
+; PE HEADER
+; =========
+; This makes the file a PE image
 PE_HEADER:
-    
+    .Signature:  db 'PE', 0, 0              ; PE\0\0 signature (magic number)
+
+; ===========
+; COFF HEADER
+; ===========
+COFF_HEADER:
+    .Machine:   dw 0x8664                   ; AMD-64/x86-64 machine type
+    .NumberOfSections: dw 2                 ; this image has .text and .data sections
+    .TimeDateStamp: dd 0                    ; I'm not gonna do this lol
+    .PointerToSymbolTable: dd 0             ; there is no symbol table
+    .NumberOfSymbols: dd 0                  ; no symbols
+    .SizeOfOptionalHeader: dw OPT_HEADER_SIZE ; TODO: size of the optional header!
+    .Characteristics: dw 0x0022             ; EXECUTABLE_IMAGE (0x0002) | LARGE_ADDRESS_AWARE (0x0020)

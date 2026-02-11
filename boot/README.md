@@ -27,7 +27,37 @@ An application must use a PE32+ image format with a modified header signature.
 8. **.data Section**
 
 ##### The DOS Stub
-[OSDev Wiki](https://wiki.osdev.org/PE#DOS_Stub)
+[OSDev Wiki](https://wiki.osdev.org/MZ)
 The DOS header is a legacy compatibility stub. It starts with 'MZ' (0x4D5A), a magic number.
 Most of the fields are unused, the only one being used is e_lfanew.
 The field at 0x3C, known as e_lfanew, points to the start of the PE header.
+There's a lot of stuff to learn about this one but it's not really "used" for a PE32+ image.
+
+##### The PE Header
+The PE header holds information on the entire file. The magic number 'PE\0\0' (0x00004550) is the bare minimum needed to 
+define the header.
+
+##### COFF COFF
+[Microsft PE Format](https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#coff-file-header-object-and-image)
+[OSDev Wiki](https://wiki.osdev.org/COFF)
+This header specifies things like the machine type, and the number of sections (`.text`, `.data`).
+It describes the structure of the image.
+COFF stands for Common Object File Format.
+
+| Field | Size | Description |
+|:--    |:-:   | :--         |
+| Machine | 2 | Identifies the target machine's type |
+| NumberOfSections | 2 | Size of the section table |
+| TimeDateStamp | 4 | Number of seconds since 00:00 Jan 1, 1970 indicating when the file was created |
+| PointerToSymbolTable | 4 | Should be 0. Points to a COFF symbol table |
+| NumberOfSymbols | 4 | This should be 0 too. The number of entries in the symbol table |
+| SizeOfOptionalHeader | 2 | The size of the optional header |
+| Characteristics | 2 | File attribute flags |
+
+The symbol table is deprecated, so everything related should be set to 0.
+
+For the machine type, I'm targeting x86-64, so the field's value is 0x8664.
+**Characteristics**:
+- EXECUTABLE_IMAGE (0x0002): Marks the file as executable.
+- LARGE_ADDRESS_AWARE (0x0020): Addressing >2GB addresses
+
